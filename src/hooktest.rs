@@ -8,7 +8,7 @@ use amethyst::renderer::{
     Texture, TextureMetadata,
 };
 
-mod components; // TODO: why no worky
+use crate::components;
 
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
@@ -16,28 +16,23 @@ pub const HOOK_RADIUS: f32 = 2.0;
 
 pub struct HookTest;
 
-
 impl SimpleState for HookTest {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
         let sprite_sheet_handle = load_sprite_sheet(world);
 
-        world.register::<Hook>();
+        world.register::<components::Hook>();
 
         initialise_hook(world, sprite_sheet_handle);
         initialise_camera(world);
     }
 }
 
-// pub struct Hook {
-//     pub velocity: [f32; 2],
-//     pub radius: f32,
-// }
-
-// impl Component for Hook {
-//     type Storage = DenseVecStorage<Self>;
-// }
+fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
+    let mut local_transform = Transform::default();
+    local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
+}
 
 fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut local_transform = Transform::default();

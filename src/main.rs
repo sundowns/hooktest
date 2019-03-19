@@ -8,6 +8,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
+mod components;
 mod hooktest;
 use crate::hooktest::HookTest;
 

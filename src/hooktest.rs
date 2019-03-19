@@ -1,18 +1,21 @@
 extern crate amethyst;
-use amethyst::prelude::*;
-use amethyst::core::transform::Transform;
-use amethyst::ecs::prelude::{Component, DenseVecStorage};
 use amethyst::assets::{AssetStorage, Loader};
+use amethyst::core::transform::Transform;
+
+use amethyst::prelude::*;
 use amethyst::renderer::{
-    Camera, PngFormat, Projection, SpriteRender, SpriteSheet, SpriteSheetFormat,
-    SpriteSheetHandle, Texture, TextureMetadata,
+    Camera, PngFormat, Projection, SpriteRender, SpriteSheet, SpriteSheetFormat, SpriteSheetHandle,
+    Texture, TextureMetadata,
 };
+
+mod components; // TODO: why no worky
 
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
 pub const HOOK_RADIUS: f32 = 2.0;
 
 pub struct HookTest;
+
 
 impl SimpleState for HookTest {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
@@ -27,29 +30,34 @@ impl SimpleState for HookTest {
     }
 }
 
-pub struct Hook {
-    pub velocity: [f32; 2],
-    pub radius: f32,
-}
+// pub struct Hook {
+//     pub velocity: [f32; 2],
+//     pub radius: f32,
+// }
 
-impl Component for Hook {
-    type Storage = DenseVecStorage<Self>;
-}
+// impl Component for Hook {
+//     type Storage = DenseVecStorage<Self>;
+// }
 
 fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut local_transform = Transform::default();
-    local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
+    local_transform.set_xyz(ARENA_WIDTH / 2.0 + 20.0, ARENA_HEIGHT / 2.0 + 20.0, 0.0); // TODO: hacked atm to move out of the way (+20)s
 
     // Assign the sprite
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
-        sprite_number: 0, 
+        sprite_number: 0,
     };
 
-    world.create_entity().with(sprite_render).with(Hook {
-        velocity: [0.0,0.0],
-        radius: HOOK_RADIUS
-    }).with(local_transform).build();
+    world
+        .create_entity()
+        .with(sprite_render)
+        .with(components::Hook {
+            velocity: [0.0, 0.0],
+            radius: HOOK_RADIUS,
+        })
+        .with(local_transform)
+        .build();
 }
 
 fn initialise_camera(world: &mut World) {

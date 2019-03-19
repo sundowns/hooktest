@@ -14,16 +14,18 @@ pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
 pub const HOOK_RADIUS: f32 = 2.0;
 
-pub struct HookTest;
+pub struct HookArena;
 
-impl SimpleState for HookTest {
+impl SimpleState for HookArena {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
         let sprite_sheet_handle = load_sprite_sheet(world);
 
         world.register::<components::Hook>();
+        world.register::<components::Player>();
 
+        initialise_player(world, sprite_sheet_handle.clone());
         initialise_hook(world, sprite_sheet_handle);
         initialise_camera(world);
     }
@@ -32,6 +34,21 @@ impl SimpleState for HookTest {
 fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut local_transform = Transform::default();
     local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
+
+    // Assign the sprite
+    let sprite_render = SpriteRender {
+        sprite_sheet: sprite_sheet,
+        sprite_number: 1,
+    };
+
+    world
+        .create_entity()
+        .with(sprite_render)
+        .with(local_transform)
+        .with(components::Player {
+            velocity: [0.0, 0.0],
+        })
+        .build();
 }
 
 fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {

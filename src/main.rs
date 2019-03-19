@@ -9,8 +9,8 @@ use amethyst::{
 };
 
 mod components;
-mod hooktest;
-use crate::hooktest::HookTest;
+mod hookarena;
+use crate::hookarena::HookArena;
 
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
@@ -34,7 +34,7 @@ fn main() -> amethyst::Result<()> {
         .with_bundle(TransformBundle::new())?
         .with_bundle(input_bundle)?;
 
-    let mut game = Application::new("./", HookTest, game_data)?;
+    let mut game = Application::new("./", HookArena, game_data)?;
 
     game.run();
 

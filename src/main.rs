@@ -10,6 +10,7 @@ use amethyst::{
 
 mod components;
 mod hookarena;
+mod systems;
 use crate::hookarena::HookArena;
 
 fn main() -> amethyst::Result<()> {
@@ -32,7 +33,12 @@ fn main() -> amethyst::Result<()> {
     let game_data = GameDataBuilder::default()
         .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
         .with_bundle(TransformBundle::new())?
-        .with_bundle(input_bundle)?;
+        .with_bundle(input_bundle)?
+        .with(
+            systems::MovementSystem,
+            "movement_system",
+            &["input_system"],
+        );
 
     let mut game = Application::new("./", HookArena, game_data)?;
 

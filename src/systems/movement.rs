@@ -11,6 +11,36 @@ pub struct MovementSystem;
 
 pub const FRICTION: f32 = 0.3;
 
+fn apply_friction(player: &mut Player, delta_time: f32) {
+    // Apply friction and cap velocities
+    player.velocity[0] = player.velocity[0]
+        - (player.velocity[0] * 1.0 / FRICTION * delta_time)
+            .min(player.max_velocity[0])
+            .max(-1.0 * player.max_velocity[0]);
+
+    player.velocity[1] = player.velocity[1]
+        - (player.velocity[1] * 1.0 / FRICTION * delta_time)
+            .min(player.max_velocity[1])
+            .max(-1.0 * player.max_velocity[1]);
+}
+
+fn apply_translations(player: &mut Player, transform: &mut Transform, delta_time: f32) {
+    // Apply translations
+    let player_x = transform.translation().x;
+    transform.set_x(
+        (player_x + (player.velocity[0] * delta_time))
+            .min(ARENA_WIDTH)
+            .max(0.0),
+    );
+
+    let player_y = transform.translation().y;
+    transform.set_y(
+        (player_y + (player.velocity[1] * delta_time))
+            .min(ARENA_HEIGHT)
+            .max(0.0),
+    );
+}
+
 impl<'s> System<'s> for MovementSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
@@ -39,31 +69,8 @@ impl<'s> System<'s> for MovementSystem {
                 _ => {}
             }
 
-            // Apply friction and cap velocities
-            _player.velocity[0] = (_player.velocity[0]
-                - (_player.velocity[0] * 1.0 / FRICTION * time.delta_seconds()))
-            .min(_player.max_velocity[0])
-            .max(-1.0 * _player.max_velocity[0]);
-
-            _player.velocity[1] = _player.velocity[1]
-                - (_player.velocity[1] * 1.0 / FRICTION * time.delta_seconds())
-                    .min(_player.max_velocity[1])
-                    .max(-1.0 * _player.max_velocity[1]);
-
-            // Apply translations
-            let player_x = _transform.translation().x;
-            _transform.set_x(
-                (player_x + (_player.velocity[0] * time.delta_seconds()))
-                    .min(ARENA_WIDTH)
-                    .max(0.0),
-            );
-
-            let player_y = _transform.translation().y;
-            _transform.set_y(
-                (player_y + (_player.velocity[1] * time.delta_seconds()))
-                    .min(ARENA_HEIGHT)
-                    .max(0.0),
-            );
+            apply_friction(_player, time.delta_seconds());
+            apply_translations(_player, _transform, time.delta_seconds());
         }
     }
 }

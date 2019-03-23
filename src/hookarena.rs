@@ -47,8 +47,8 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
         .with(local_transform)
         .with(components::Player {
             velocity: [0.0, 0.0],
-            max_velocity: [30.0, 30.0],
-            acceleration: 50.0,
+            max_velocity: [50.0, 50.0],
+            acceleration: 75.0,
         })
         .build();
 }

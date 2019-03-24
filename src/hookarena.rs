@@ -55,7 +55,7 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
 
 fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut local_transform = Transform::default();
-    local_transform.set_xyz(ARENA_WIDTH / 2.0 + 20.0, ARENA_HEIGHT / 2.0 + 20.0, 0.0); // TODO: hacked atm to move out of the way (+20)s
+    local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
 
     // Assign the sprite
     let sprite_render = SpriteRender {

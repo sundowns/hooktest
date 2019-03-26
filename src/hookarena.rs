@@ -22,11 +22,11 @@ impl SimpleState for HookArena {
 
         let sprite_sheet_handle = load_sprite_sheet(world);
 
-        world.register::<components::Hook>();
+        // world.register::<components::Hook>();
         world.register::<components::Player>();
 
         initialise_player(world, sprite_sheet_handle.clone());
-        initialise_hook(world, sprite_sheet_handle);
+        // initialise_hook(world, sprite_sheet_handle);
         initialise_camera(world);
     }
 }

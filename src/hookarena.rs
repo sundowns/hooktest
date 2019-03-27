@@ -22,11 +22,7 @@ impl SimpleState for HookArena {
 
         let sprite_sheet_handle = load_sprite_sheet(world);
 
-        // world.register::<components::Hook>();
-        world.register::<components::Player>();
-
         initialise_player(world, sprite_sheet_handle.clone());
-        // initialise_hook(world, sprite_sheet_handle);
         initialise_camera(world);
     }
 }
@@ -54,26 +50,26 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
         .build();
 }
 
-fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
-    let mut local_transform = Transform::default();
-    local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
+// fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
+//     let mut local_transform = Transform::default();
+//     local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
 
-    // Assign the sprite
-    let sprite_render = SpriteRender {
-        sprite_sheet: sprite_sheet.clone(),
-        sprite_number: 0,
-    };
+//     // Assign the sprite
+//     let sprite_render = SpriteRender {
+//         sprite_sheet: sprite_sheet.clone(),
+//         sprite_number: 0,
+//     };
 
-    world
-        .create_entity()
-        .with(sprite_render)
-        .with(components::Hook {
-            velocity: [0.0, 0.0],
-            radius: HOOK_RADIUS,
-        })
-        .with(local_transform)
-        .build();
-}
+//     world
+//         .create_entity()
+//         .with(sprite_render)
+//         .with(components::Hook {
+//             velocity: [0.0, 0.0],
+//             radius: HOOK_RADIUS,
+//         })
+//         .with(local_transform)
+//         .build();
+// }
 
 fn initialise_camera(world: &mut World) {
     let mut transform = Transform::default();

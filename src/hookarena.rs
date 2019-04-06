@@ -1,6 +1,7 @@
 extern crate amethyst;
 use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::transform::Transform;
+use amethyst::ecs::Resources;
 
 use amethyst::prelude::*;
 use amethyst::renderer::{
@@ -19,10 +20,12 @@ pub struct HookArena;
 impl SimpleState for HookArena {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
+        let mut resources = Resources::new();
 
         let sprite_sheet_handle = load_sprite_sheet(world);
+        resources.insert(sprite_sheet_handle.clone());
 
-        initialise_player(world, sprite_sheet_handle.clone());
+        initialise_player(world, sprite_sheet_handle);
         initialise_camera(world);
     }
 }
@@ -49,27 +52,6 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
         .with(components::Gravity)
         .build();
 }
-
-// fn initialise_hook(world: &mut World, sprite_sheet: SpriteSheetHandle) {
-//     let mut local_transform = Transform::default();
-//     local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
-
-//     // Assign the sprite
-//     let sprite_render = SpriteRender {
-//         sprite_sheet: sprite_sheet.clone(),
-//         sprite_number: 0,
-//     };
-
-//     world
-//         .create_entity()
-//         .with(sprite_render)
-//         .with(components::Hook {
-//             velocity: [0.0, 0.0],
-//             radius: HOOK_RADIUS,
-//         })
-//         .with(local_transform)
-//         .build();
-// }
 
 fn initialise_camera(world: &mut World) {
     let mut transform = Transform::default();

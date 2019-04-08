@@ -8,7 +8,7 @@ use amethyst::input::InputHandler;
 use amethyst::renderer::{ScreenDimensions, SpriteRender, SpriteSheetHandle};
 
 use crate::components::{Hook, Player};
-use crate::hookarena::{ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
+use crate::hookarena::{GameAssets, ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
 
 pub struct AimingSystem;
 
@@ -20,13 +20,13 @@ impl<'s> System<'s> for AimingSystem {
         Entities<'s>,
         Read<'s, InputHandler<String, String>>,
         ReadExpect<'s, ScreenDimensions>,
-        Read<'s, Resources>,
+        ReadExpect<'s, GameAssets>,
         WriteStorage<'s, SpriteRender>,
     );
 
     fn run(
         &mut self,
-        (mut transforms, mut hooks, players, entities, input, screen, resources, mut sprites): Self::SystemData,
+        (mut transforms, mut hooks, players, entities, input, screen, assets, mut sprites): Self::SystemData,
     ) {
         let screen_ratios = vec![ARENA_WIDTH / screen.width(), ARENA_HEIGHT / screen.height()];
         let mut new_hooks: Vec<Transform> = Vec::new();
@@ -54,33 +54,20 @@ impl<'s> System<'s> for AimingSystem {
             }
         }
 
-        let fetch_resource = resources.try_fetch::<SpriteSheetHandle>();
-
-        if let Some(sprite_sheet) = fetch_resource {
-            println!("test1");
-            while let Some(_transform) = new_hooks.pop() {
-                // TODO: Prevent more than 1 hook being fired at a time per player
-
-                // Assign the sprite
-                let sprite_render = SpriteRender {
-                    sprite_sheet: sprite_sheet.clone(),
-                    sprite_number: 0,
-                };
-
-                println!("test2");
-                entities
-                    .build_entity()
-                    .with(_transform, &mut transforms)
-                    .with(
-                        Hook {
-                            velocity: [0.0, 0.0],
-                            radius: HOOK_RADIUS,
-                        },
-                        &mut hooks,
-                    )
-                    .with(sprite_render, &mut sprites)
-                    .build();
-            }
+        while let Some(_transform) = new_hooks.pop() {
+            // TODO: Prevent more than 1 hook being fired at a time per player
+            entities
+                .build_entity()
+                .with(_transform, &mut transforms)
+                .with(
+                    Hook {
+                        velocity: [0.0, 0.0],
+                        radius: HOOK_RADIUS,
+                    },
+                    &mut hooks,
+                )
+                .with(assets.entity_sprite(0), &mut sprites)
+                .build();
         }
     }
 }

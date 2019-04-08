@@ -1,7 +1,6 @@
 extern crate amethyst;
 use amethyst::assets::{AssetStorage, Loader};
 use amethyst::core::transform::Transform;
-use amethyst::ecs::Resources;
 
 use amethyst::prelude::*;
 use amethyst::renderer::{
@@ -15,15 +14,30 @@ pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
 pub const HOOK_RADIUS: f32 = 2.0;
 
+#[derive(Clone)]
+pub struct GameAssets {
+    entities_sprite_sheet: SpriteSheetHandle,
+}
+
+impl GameAssets {
+    pub fn entity_sprite(&self, sprite_number: usize) -> SpriteRender {
+        SpriteRender {
+            sprite_sheet: self.entities_sprite_sheet.clone(),
+            sprite_number,
+        }
+    }
+}
+
 pub struct HookArena;
 
 impl SimpleState for HookArena {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
-        let mut resources = Resources::new();
 
         let sprite_sheet_handle = load_sprite_sheet(world);
-        resources.insert(sprite_sheet_handle.clone());
+        world.add_resource(GameAssets {
+            entities_sprite_sheet: sprite_sheet_handle.clone(),
+        });
 
         initialise_player(world, sprite_sheet_handle);
         initialise_camera(world);

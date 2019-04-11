@@ -11,6 +11,7 @@ use crate::hookarena::{GameAssets, ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
 pub struct NewHook {
     owner: Entity,
     transform: Transform,
+    velocity: [f32; 2],
 }
 
 pub struct AimingSystem;
@@ -45,25 +46,35 @@ impl<'s> System<'s> for AimingSystem {
         let screen_ratios = vec![ARENA_WIDTH / screen.width(), ARENA_HEIGHT / screen.height()];
         let mut new_hooks: Vec<NewHook> = Vec::new();
 
-        for (_entity, _player, _, _) in (&entities, &players, &mut transforms, !&hooks_fired).join()
+        for (_entity, _player, _transform, _) in
+            (&entities, &players, &mut transforms, !&hooks_fired).join()
         {
             match input.action_is_down("fire") {
-                Some(_v) => {
-                    if let Some(position) = input.mouse_position() {
-                        let mut local_transform = Transform::default();
-                        local_transform.set_xyz(
-                            ((position.0 as f32) * screen_ratios[0])
-                                .min(ARENA_WIDTH)
-                                .max(0.0),
-                            (ARENA_HEIGHT - ((position.1 as f32) * screen_ratios[1]))
-                                .min(ARENA_HEIGHT)
-                                .max(0.0),
-                            0.0,
-                        );
-                        new_hooks.push(NewHook {
-                            transform: local_transform,
-                            owner: _entity,
-                        });
+                Some(_is_down) => {
+                    if _is_down {
+                        if let Some(position) = input.mouse_position() {
+                            let mut local_transform = Transform::default();
+                            local_transform.set_xyz(
+                                ((position.0 as f32) * screen_ratios[0])
+                                    .min(ARENA_WIDTH)
+                                    .max(0.0),
+                                (ARENA_HEIGHT - ((position.1 as f32) * screen_ratios[1]))
+                                    .min(ARENA_HEIGHT)
+                                    .max(0.0),
+                                0.0,
+                            );
+
+                            // TODO: spawn hook at player^
+
+                            let x_vel = position.0 - _transform.x; // TTODO: figure out transform api
+                            let y_vel = position.1 - _transform.y;
+
+                            new_hooks.push(NewHook {
+                                velocity: [x_vel, y_vel],
+                                transform: local_transform,
+                                owner: _entity,
+                            });
+                        }
                     }
                 }
                 _ => {}
@@ -71,7 +82,6 @@ impl<'s> System<'s> for AimingSystem {
         }
 
         while let Some(_new_hook) = new_hooks.pop() {
-            // TODO: spawn the hook at the players origin and give it velocity towards its target!
             match hooks_fired.insert(_new_hook.owner, HookFired) {
                 Err(_v) => panic!("Failed to store new hook"),
                 _ => {}
@@ -82,7 +92,7 @@ impl<'s> System<'s> for AimingSystem {
                 .with(_new_hook.transform, &mut transforms)
                 .with(
                     Hook {
-                        velocity: [0.0, 0.0],
+                        velocity: _new_hook.velocity,
                         radius: HOOK_RADIUS,
                     },
                     &mut hooks,

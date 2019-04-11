@@ -48,15 +48,12 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
     let mut local_transform = Transform::default();
     local_transform.set_xyz(ARENA_WIDTH / 2.0, ARENA_HEIGHT / 2.0, 0.0);
 
-    // Assign the sprite
-    let sprite_render = SpriteRender {
-        sprite_sheet: sprite_sheet,
-        sprite_number: 1,
-    };
-
     world
         .create_entity()
-        .with(sprite_render)
+        .with(SpriteRender {
+            sprite_sheet: sprite_sheet,
+            sprite_number: 1,
+        })
         .with(local_transform)
         .with(components::Player {
             velocity: [0.0, 0.0],

@@ -40,7 +40,8 @@ fn main() -> amethyst::Result<()> {
             &["input_system"],
         )
         .with(systems::AimingSystem, "aiming_system", &["input_system"])
-        .with(systems::GravitySystem, "gravity_system", &[]);
+        .with(systems::GravitySystem, "gravity_system", &[])
+        .with(systems::MoveHookSystem, "move_hook_system", &[]);
 
     let mut game = Application::new("./", HookArena, game_data)?;
 

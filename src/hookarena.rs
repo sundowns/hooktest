@@ -60,7 +60,7 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
             max_velocity: [100.0, 100.0],
             acceleration: 500.0,
         })
-        .with(components::Gravity)
+        // .with(components::Gravity)
         .build();
 }
 

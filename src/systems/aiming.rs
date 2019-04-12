@@ -11,7 +11,7 @@ use crate::hookarena::{GameAssets, ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
 pub struct NewHook {
     owner: Entity,
     transform: Transform,
-    velocity: [f32; 2],
+    velocity: Vec<f32>,
 }
 
 pub struct AimingSystem;
@@ -52,26 +52,23 @@ impl<'s> System<'s> for AimingSystem {
             match input.action_is_down("fire") {
                 Some(_is_down) => {
                     if _is_down {
-                        if let Some(position) = input.mouse_position() {
-                            let mut local_transform = Transform::default();
-                            local_transform.set_xyz(
-                                ((position.0 as f32) * screen_ratios[0])
-                                    .min(ARENA_WIDTH)
-                                    .max(0.0),
-                                (ARENA_HEIGHT - ((position.1 as f32) * screen_ratios[1]))
-                                    .min(ARENA_HEIGHT)
-                                    .max(0.0),
-                                0.0,
-                            );
+                        if let Some(mouse_position) = input.mouse_position() {
+                            let world_position = vec![
+                                (mouse_position.0 as f32) * screen_ratios[0],
+                                (mouse_position.1 as f32) * screen_ratios[1],
+                            ];
 
-                            // TODO: spawn hook at player^
-
-                            let x_vel = position.0 - _transform.x; // TTODO: figure out transform api
-                            let y_vel = position.1 - _transform.y;
+                            // Y coordinate is subtracted from arena height. Origin is the bottom left
+                            // TODO: unit vector * hook speed
+                            let vel = vec![
+                                ((world_position[0] as f32) - _transform.translation().x),
+                                ((ARENA_HEIGHT - (world_position[1] as f32))
+                                    - _transform.translation().y),
+                            ];
 
                             new_hooks.push(NewHook {
-                                velocity: [x_vel, y_vel],
-                                transform: local_transform,
+                                velocity: vel,
+                                transform: _transform.clone(),
                                 owner: _entity,
                             });
                         }
@@ -86,6 +83,8 @@ impl<'s> System<'s> for AimingSystem {
                 Err(_v) => panic!("Failed to store new hook"),
                 _ => {}
             };
+
+            println!("{:?}", _new_hook.velocity);
 
             entities
                 .build_entity()

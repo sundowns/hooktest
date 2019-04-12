@@ -1,4 +1,4 @@
 pub struct Hook {
-    pub velocity: [f32; 2],
+    pub velocity: Vec<f32>,
     pub radius: f32,
 }

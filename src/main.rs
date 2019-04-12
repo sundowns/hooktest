@@ -39,7 +39,11 @@ fn main() -> amethyst::Result<()> {
             "movement_system",
             &["input_system"],
         )
-        .with(systems::AimingSystem, "aiming_system", &["input_system"])
+        .with(
+            systems::SpawnHookSystem,
+            "spawn_hook_system",
+            &["input_system"],
+        )
         .with(systems::GravitySystem, "gravity_system", &[])
         .with(systems::MoveHookSystem, "move_hook_system", &[]);
 

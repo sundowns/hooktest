@@ -5,7 +5,7 @@ use amethyst::ecs::{Entities, Entity, Join, Read, ReadExpect, ReadStorage, Syste
 use amethyst::input::InputHandler;
 use amethyst::renderer::{ScreenDimensions, SpriteRender};
 
-use crate::components::{Hook, HookFired, Player};
+use crate::components::{Extending, Hook, HookFired, Player};
 use crate::hookarena::{GameAssets, ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
 
 pub struct NewHook {
@@ -14,9 +14,9 @@ pub struct NewHook {
     velocity: Vec<f32>,
 }
 
-pub struct AimingSystem;
+pub struct SpawnHookSystem;
 
-impl<'s> System<'s> for AimingSystem {
+impl<'s> System<'s> for SpawnHookSystem {
     type SystemData = (
         WriteStorage<'s, Transform>,
         WriteStorage<'s, Hook>,
@@ -27,6 +27,7 @@ impl<'s> System<'s> for AimingSystem {
         ReadExpect<'s, GameAssets>,
         WriteStorage<'s, SpriteRender>,
         WriteStorage<'s, HookFired>,
+        WriteStorage<'s, Extending>,
     );
 
     fn run(
@@ -41,6 +42,7 @@ impl<'s> System<'s> for AimingSystem {
             assets,
             mut sprites,
             mut hooks_fired,
+            mut is_extending,
         ): Self::SystemData,
     ) {
         let screen_ratios = vec![ARENA_WIDTH / screen.width(), ARENA_HEIGHT / screen.height()];
@@ -95,6 +97,12 @@ impl<'s> System<'s> for AimingSystem {
                         radius: HOOK_RADIUS,
                     },
                     &mut hooks,
+                )
+                .with(
+                    Extending {
+                        distance_traveled: 0.0,
+                    },
+                    &mut is_extending,
                 )
                 .with(assets.entity_sprite(0), &mut sprites)
                 .build();

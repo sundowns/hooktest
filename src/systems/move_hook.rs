@@ -18,17 +18,17 @@ impl<'s> System<'s> for MoveHookSystem {
     );
 
     fn run(&mut self, (hooks, time, mut locals, mut is_extending): Self::SystemData) {
-        // Move every ball according to its speed, and the time passed.
-        for (_hook, local) in (&hooks, &mut locals).join() {
+        // Move every hook according to its speed, and the time passed.
+        for (_hook, local, _is_extending) in (&hooks, &mut locals, &mut is_extending).join() {
             local.translate_x(_hook.velocity[0] * time.delta_seconds());
             local.translate_y(_hook.velocity[1] * time.delta_seconds());
-        }
 
-        for (_is_extending, _hook) in (&mut is_extending, &hooks).join() {
-            // TODO: calc distance and increment ix_extending counter.
-            // TODO:  when counter == max_distance -> reset hook velocity & remove Extending component
+            _is_extending.distance_traveled =
+                _is_extending.distance_traveled + (_hook.speed * time.delta_seconds());
 
-            // _is_extending.distance_traveled = _is_extending.distance_traveled + _hook.velocity.x
+            if _is_extending.distance_traveled > _hook.max_distance {
+                println!("max distance reached, destroy/stop me!"); // TODO: new struct to reference is_extending components and destroy them out of the loop
+            };
         }
     }
 }

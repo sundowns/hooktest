@@ -1,13 +1,11 @@
 extern crate amethyst;
 
 use amethyst::core::{Time, Transform};
-use amethyst::ecs::{Join, Read, ReadExpect, System, WriteStorage};
+use amethyst::ecs::{Join, Read, System, WriteStorage};
 use amethyst::input::InputHandler;
 
 use crate::components::Player;
 use crate::config::ArenaConfig;
-
-// const FRICTION: f32 = 0.3;
 
 pub struct MovementSystem;
 

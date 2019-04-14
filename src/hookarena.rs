@@ -12,6 +12,8 @@ use crate::components;
 use crate::config::ArenaConfig;
 
 pub const HOOK_RADIUS: f32 = 2.0;
+pub const HOOK_DISTANCE: f32 = 100.0;
+pub const HOOK_SPEED: f32 = 40.0;
 
 #[derive(Clone)]
 pub struct GameAssets {

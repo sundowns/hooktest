@@ -7,7 +7,7 @@ use amethyst::renderer::{ScreenDimensions, SpriteRender};
 
 use crate::components::{Extending, Hook, HookFired, Player};
 use crate::config::ArenaConfig;
-use crate::hookarena::{GameAssets, HOOK_RADIUS};
+use crate::hookarena::{GameAssets, HOOK_DISTANCE, HOOK_RADIUS, HOOK_SPEED};
 
 pub struct NewHook {
     owner: Entity,
@@ -67,12 +67,17 @@ impl<'s> System<'s> for SpawnHookSystem {
                             ];
 
                             // Y coordinate is subtracted from arena height. Origin is the bottom left
-                            // TODO: unit vector * hook speed
-                            let vel = vec![
+                            let mut vel = vec![
                                 ((world_position[0] as f32) - _transform.translation().x),
                                 ((arena_config.height - (world_position[1] as f32))
                                     - _transform.translation().y),
                             ];
+
+                            let magnitude = ((vel[0] * vel[0]) + (vel[1] * vel[1])).sqrt();
+
+                            // Normalise hook speeds
+                            vel[0] = vel[0] / magnitude * HOOK_SPEED;
+                            vel[1] = vel[1] / magnitude * HOOK_SPEED;
 
                             new_hooks.push(NewHook {
                                 velocity: vel,
@@ -92,8 +97,6 @@ impl<'s> System<'s> for SpawnHookSystem {
                 _ => {}
             };
 
-            println!("{:?}", _new_hook.velocity);
-
             entities
                 .build_entity()
                 .with(_new_hook.transform, &mut transforms)
@@ -101,6 +104,8 @@ impl<'s> System<'s> for SpawnHookSystem {
                     Hook {
                         velocity: _new_hook.velocity,
                         radius: HOOK_RADIUS,
+                        max_distance: HOOK_DISTANCE,
+                        speed: HOOK_SPEED,
                     },
                     &mut hooks,
                 )

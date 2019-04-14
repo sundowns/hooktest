@@ -6,7 +6,8 @@ use amethyst::input::InputHandler;
 use amethyst::renderer::{ScreenDimensions, SpriteRender};
 
 use crate::components::{Extending, Hook, HookFired, Player};
-use crate::hookarena::{GameAssets, ARENA_HEIGHT, ARENA_WIDTH, HOOK_RADIUS};
+use crate::config::ArenaConfig;
+use crate::hookarena::{GameAssets, HOOK_RADIUS};
 
 pub struct NewHook {
     owner: Entity,
@@ -23,6 +24,7 @@ impl<'s> System<'s> for SpawnHookSystem {
         ReadStorage<'s, Player>,
         Entities<'s>,
         Read<'s, InputHandler<String, String>>,
+        ReadExpect<'s, ArenaConfig>,
         ReadExpect<'s, ScreenDimensions>,
         ReadExpect<'s, GameAssets>,
         WriteStorage<'s, SpriteRender>,
@@ -38,6 +40,7 @@ impl<'s> System<'s> for SpawnHookSystem {
             players,
             entities,
             input,
+            arena_config,
             screen,
             assets,
             mut sprites,
@@ -45,7 +48,10 @@ impl<'s> System<'s> for SpawnHookSystem {
             mut is_extending,
         ): Self::SystemData,
     ) {
-        let screen_ratios = vec![ARENA_WIDTH / screen.width(), ARENA_HEIGHT / screen.height()];
+        let screen_ratios = vec![
+            arena_config.width / screen.width(),
+            arena_config.height / screen.height(),
+        ];
         let mut new_hooks: Vec<NewHook> = Vec::new();
 
         for (_entity, _player, _transform, _) in
@@ -64,7 +70,7 @@ impl<'s> System<'s> for SpawnHookSystem {
                             // TODO: unit vector * hook speed
                             let vel = vec![
                                 ((world_position[0] as f32) - _transform.translation().x),
-                                ((ARENA_HEIGHT - (world_position[1] as f32))
+                                ((arena_config.height - (world_position[1] as f32))
                                     - _transform.translation().y),
                             ];
 

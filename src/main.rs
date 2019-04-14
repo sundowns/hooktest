@@ -9,8 +9,10 @@ use amethyst::{
 };
 
 mod components;
+mod config;
 mod hookarena;
 mod systems;
+use crate::config::ArenaConfig;
 use crate::hookarena::HookArena;
 
 fn main() -> amethyst::Result<()> {
@@ -30,6 +32,10 @@ fn main() -> amethyst::Result<()> {
     let input_bundle =
         InputBundle::<String, String>::new().with_bindings_from_file(binding_path)?;
 
+    let config_path = format!("{}/resources/config.ron", application_root_dir());
+
+    let arena_config = ArenaConfig::load(&config_path);
+
     let game_data = GameDataBuilder::default()
         .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
         .with_bundle(TransformBundle::new())?
@@ -47,7 +53,9 @@ fn main() -> amethyst::Result<()> {
         .with(systems::GravitySystem, "gravity_system", &[])
         .with(systems::MoveHookSystem, "move_hook_system", &[]);
 
-    let mut game = Application::new("./", HookArena, game_data)?;
+    let mut game = Application::build("./", HookArena)?
+        .with_resource(arena_config)
+        .build(game_data)?;
 
     game.run();
 

@@ -1,15 +1,15 @@
 extern crate amethyst;
 
 use amethyst::core::{Time, Transform};
-use amethyst::ecs::{Join, Read, System, WriteStorage};
+use amethyst::ecs::{Join, Read, ReadExpect, System, WriteStorage};
 use amethyst::input::InputHandler;
 
 use crate::components::Player;
-use crate::hookarena::{ARENA_HEIGHT, ARENA_WIDTH};
+use crate::config::ArenaConfig;
+
+// const FRICTION: f32 = 0.3;
 
 pub struct MovementSystem;
-
-pub const FRICTION: f32 = 0.3;
 
 impl<'s> System<'s> for MovementSystem {
     type SystemData = (
@@ -17,9 +17,10 @@ impl<'s> System<'s> for MovementSystem {
         WriteStorage<'s, Player>,
         Read<'s, InputHandler<String, String>>,
         Read<'s, Time>,
+        Read<'s, ArenaConfig>,
     );
 
-    fn run(&mut self, (mut transforms, mut players, input, time): Self::SystemData) {
+    fn run(&mut self, (mut transforms, mut players, input, time, arena_config): Self::SystemData) {
         for (_player, _transform) in (&mut players, &mut transforms).join() {
             match input.axis_value("horizontal") {
                 Some(v) => {
@@ -39,39 +40,45 @@ impl<'s> System<'s> for MovementSystem {
                 _ => {}
             }
 
-            self.apply_friction(_player, time.delta_seconds());
-            self.apply_translations(_player, _transform, time.delta_seconds());
+            self.apply_friction(_player, time.delta_seconds(), &arena_config);
+            self.apply_translations(_player, _transform, time.delta_seconds(), &arena_config);
         }
     }
 }
 
 impl MovementSystem {
-    fn apply_friction(&self, player: &mut Player, delta_time: f32) {
+    fn apply_friction(&self, player: &mut Player, delta_time: f32, arena_config: &ArenaConfig) {
         // Apply friction and cap velocities
         player.velocity[0] = player.velocity[0]
-            - (player.velocity[0] * 1.0 / FRICTION * delta_time)
+            - (player.velocity[0] * 1.0 / arena_config.friction * delta_time)
                 .min(player.max_velocity[0])
                 .max(-1.0 * player.max_velocity[0]);
 
         player.velocity[1] = player.velocity[1]
-            - (player.velocity[1] * 1.0 / FRICTION * delta_time)
+            - (player.velocity[1] * 1.0 / arena_config.friction * delta_time)
                 .min(player.max_velocity[1])
                 .max(-1.0 * player.max_velocity[1]);
     }
 
-    fn apply_translations(&self, player: &mut Player, transform: &mut Transform, delta_time: f32) {
+    fn apply_translations(
+        &self,
+        player: &mut Player,
+        transform: &mut Transform,
+        delta_time: f32,
+        arena_config: &ArenaConfig,
+    ) {
         // Apply translations
         let player_x = transform.translation().x;
         transform.set_x(
             (player_x + (player.velocity[0] * delta_time))
-                .min(ARENA_WIDTH)
+                .min(arena_config.width)
                 .max(0.0),
         );
 
         let player_y = transform.translation().y;
         transform.set_y(
             (player_y + (player.velocity[1] * delta_time))
-                .min(ARENA_HEIGHT)
+                .min(arena_config.height)
                 .max(0.0),
         );
     }

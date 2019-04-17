@@ -5,7 +5,7 @@ use amethyst::ecs::{Join, Read, ReadStorage, System, WriteStorage};
 
 use crate::components::Gravity;
 
-pub const GRAVITY: f32 = 20.0;
+pub const GRAVITY: f32 = 80.0;
 
 pub struct GravitySystem;
 

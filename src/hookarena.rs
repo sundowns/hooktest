@@ -12,8 +12,8 @@ use crate::components;
 use crate::config::ArenaConfig;
 
 pub const HOOK_RADIUS: f32 = 2.0;
-pub const HOOK_DISTANCE: f32 = 100.0;
-pub const HOOK_SPEED: f32 = 40.0;
+pub const HOOK_DISTANCE: f32 = 80.0;
+pub const HOOK_SPEED: f32 = 50.0;
 
 #[derive(Clone)]
 pub struct GameAssets {
@@ -64,8 +64,9 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
         .with(components::Player {
             velocity: [0.0, 0.0],
             max_velocity: [100.0, 100.0],
-            acceleration: 500.0,
+            acceleration: 350.0,
         })
+        .with(components::Jump::default())
         .with(components::Gravity)
         .build();
 }

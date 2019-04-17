@@ -16,7 +16,9 @@ use crate::config::ArenaConfig;
 use crate::hookarena::HookArena;
 
 fn main() -> amethyst::Result<()> {
-    amethyst::start_logger(Default::default());
+    amethyst::Logger::from_config(Default::default())
+        .level_for("gfx_device_gl", amethyst::LogLevelFilter::Warn)
+        .start();
 
     let path = format!("{}/resources/display_config.ron", application_root_dir());
     let config = DisplayConfig::load(&path);
@@ -45,6 +47,7 @@ fn main() -> amethyst::Result<()> {
             "movement_system",
             &["input_system"],
         )
+        .with(systems::JumpingSystem, "jumping_system", &["input_system"])
         .with(
             systems::SpawnHookSystem,
             "spawn_hook_system",

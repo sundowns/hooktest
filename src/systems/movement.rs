@@ -29,15 +29,6 @@ impl<'s> System<'s> for MovementSystem {
                 _ => {}
             }
 
-            match input.axis_value("vertical") {
-                Some(v) => {
-                    let current_velocity_x = _player.velocity[1];
-                    _player.velocity[1] = current_velocity_x
-                        + (v as f32 * _player.acceleration * time.delta_seconds());
-                }
-                _ => {}
-            }
-
             self.apply_friction(_player, time.delta_seconds(), &arena_config);
             self.apply_translations(_player, _transform, time.delta_seconds(), &arena_config);
         }

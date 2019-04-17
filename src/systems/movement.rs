@@ -68,7 +68,7 @@ impl MovementSystem {
         transform.set_y(
             (player_y + (player.velocity[1] * delta_time))
                 .min(arena_config.height)
-                .max(0.0),
+                .max(0.0 + player.height), 
         );
     }
 }

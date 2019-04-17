@@ -12,7 +12,7 @@ use crate::hookarena::{GameAssets, HOOK_DISTANCE, HOOK_RADIUS, HOOK_SPEED};
 pub struct NewHook {
     owner: Entity,
     transform: Transform,
-    velocity: Vec<f32>,
+    velocity: [f32; 2],
 }
 
 pub struct SpawnHookSystem;
@@ -67,7 +67,7 @@ impl<'s> System<'s> for SpawnHookSystem {
                             ];
 
                             // Y coordinate is subtracted from arena height. Origin is the bottom left
-                            let mut vel = vec![
+                            let mut vel = [
                                 ((world_position[0] as f32) - _transform.translation().x),
                                 ((arena_config.height - (world_position[1] as f32))
                                     - _transform.translation().y),

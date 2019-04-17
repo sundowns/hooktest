@@ -8,6 +8,7 @@ use crate::components::Jump;
 use crate::components::Player;
 
 const JUMP_VELOCITY: f32 = 350.0;
+const FLOOR_HEIGHT: f32 = 5.0;
 
 pub struct JumpingSystem;
 
@@ -32,8 +33,8 @@ impl<'s> System<'s> for JumpingSystem {
                     _ => {}
                 }
             } else {
-                if _transform.translation().y <= 0.0 {
-                    // TODO: real collisions resolve this
+                if _transform.translation().y <= FLOOR_HEIGHT {
+                    // TODO: collidable geometry/floor
                     _jump.is_jumping = false;
                 }
             }

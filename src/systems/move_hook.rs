@@ -27,7 +27,7 @@ impl<'s> System<'s> for MoveHookSystem {
                 _is_extending.distance_traveled + (_hook.speed * time.delta_seconds());
 
             if _is_extending.distance_traveled > _hook.max_distance {
-                _hook.velocity = vec![0.0, 0.0];
+                _hook.velocity = [0.0, 0.0];
                 // TODO: Remove the is_extending component. Do I need to join with entities to achieve this?
             };
         }

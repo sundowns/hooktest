@@ -60,15 +60,15 @@ impl MovementSystem {
         let player_x = transform.translation().x;
         transform.set_x(
             (player_x + (player.velocity[0] * delta_time))
-                .min(arena_config.width)
-                .max(0.0),
+                .min(arena_config.width - player.width / 2.0)
+                .max(0.0 + player.width / 2.0),
         );
 
         let player_y = transform.translation().y;
         transform.set_y(
             (player_y + (player.velocity[1] * delta_time))
                 .min(arena_config.height)
-                .max(0.0 + player.height), 
+                .max(0.0 + player.height),
         );
     }
 }

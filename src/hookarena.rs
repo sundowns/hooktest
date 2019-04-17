@@ -16,6 +16,7 @@ pub const HOOK_DISTANCE: f32 = 60.0;
 pub const HOOK_SPEED: f32 = 120.0;
 
 pub const PLAYER_HEIGHT: f32 = 5.0;
+pub const PLAYER_WIDTH: f32 = 7.5;
 pub const PLAYER_MAX_VELOCITY: [f32; 2] = [100.0, 100.0];
 pub const PLAYER_ACCELERATION: f32 = 350.0;
 
@@ -70,6 +71,7 @@ fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {
             max_velocity: PLAYER_MAX_VELOCITY,
             acceleration: PLAYER_ACCELERATION,
             height: PLAYER_HEIGHT,
+            width: PLAYER_WIDTH,
         })
         .with(components::Jump::default())
         .with(components::Gravity)

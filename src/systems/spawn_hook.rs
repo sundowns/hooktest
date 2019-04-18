@@ -106,6 +106,7 @@ impl<'s> System<'s> for SpawnHookSystem {
                         radius: HOOK_RADIUS,
                         max_distance: HOOK_DISTANCE,
                         speed: HOOK_SPEED,
+                        owner: _new_hook.owner,
                     },
                     &mut hooks,
                 )

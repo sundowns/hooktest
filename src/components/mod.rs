@@ -1,5 +1,6 @@
 use amethyst::ecs::prelude::{Component, DenseVecStorage};
 
+mod collidable;
 mod extending;
 mod gravity;
 mod hook;
@@ -8,8 +9,8 @@ mod jump;
 mod player;
 
 pub use self::{
-    extending::Extending, gravity::Gravity, hook::Hook, hook_fired::HookFired, jump::Jump,
-    player::Player,
+    collidable::Collidable, extending::Extending, gravity::Gravity, hook::Hook,
+    hook_fired::HookFired, jump::Jump, player::Player,
 };
 
 impl Component for HookFired {
@@ -33,5 +34,9 @@ impl Component for Extending {
 }
 
 impl Component for Jump {
+    type Storage = DenseVecStorage<Self>;
+}
+
+impl Component for Collidable {
     type Storage = DenseVecStorage<Self>;
 }

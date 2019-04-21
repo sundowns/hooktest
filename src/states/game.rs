@@ -10,6 +10,7 @@ use amethyst::renderer::{
 
 use crate::components;
 use crate::config::ArenaConfig;
+use crate::tile_loader;
 use crate::util::GameAssets;
 
 pub const HOOK_RADIUS: f32 = 2.0;
@@ -27,10 +28,18 @@ impl SimpleState for Game {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
+        // TODO: add this to a loading state
         let sprite_sheet_handle = load_sprite_sheet(world);
         world.add_resource(GameAssets {
             entities_sprite_sheet: sprite_sheet_handle.clone(),
         });
+
+        match tile_loader::initialise(10, 10) {
+            Some(map) => world.add_resource(map),
+            _ => {
+                panic!("failed to load the map");
+            }
+        };
 
         initialise_player(world, sprite_sheet_handle);
         initialise_camera(world);

@@ -10,10 +10,11 @@ use amethyst::{
 
 mod components;
 mod config;
-mod hookarena;
+mod states;
 mod systems;
+mod util;
 use crate::config::ArenaConfig;
-use crate::hookarena::HookArena;
+use crate::states::Game;
 
 fn main() -> amethyst::Result<()> {
     amethyst::Logger::from_config(Default::default())
@@ -56,7 +57,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::GravitySystem, "gravity_system", &[])
         .with(systems::MoveHookSystem, "move_hook_system", &[]);
 
-    let mut game = Application::build("./", HookArena)?
+    let mut game = Application::build("./", Game)?
         .with_resource(arena_config)
         .build(game_data)?;
 

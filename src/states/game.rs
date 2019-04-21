@@ -10,6 +10,7 @@ use amethyst::renderer::{
 
 use crate::components;
 use crate::config::ArenaConfig;
+use crate::util::GameAssets;
 
 pub const HOOK_RADIUS: f32 = 2.0;
 pub const HOOK_DISTANCE: f32 = 60.0;
@@ -20,23 +21,9 @@ pub const PLAYER_WIDTH: f32 = 7.5;
 pub const PLAYER_MAX_VELOCITY: [f32; 2] = [100.0, 100.0];
 pub const PLAYER_ACCELERATION: f32 = 350.0;
 
-#[derive(Clone)]
-pub struct GameAssets {
-    entities_sprite_sheet: SpriteSheetHandle,
-}
+pub struct Game;
 
-impl GameAssets {
-    pub fn entity_sprite(&self, sprite_number: usize) -> SpriteRender {
-        SpriteRender {
-            sprite_sheet: self.entities_sprite_sheet.clone(),
-            sprite_number,
-        }
-    }
-}
-
-pub struct HookArena;
-
-impl SimpleState for HookArena {
+impl SimpleState for Game {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 

@@ -7,7 +7,8 @@ use amethyst::renderer::{ScreenDimensions, SpriteRender};
 
 use crate::components::{Extending, Hook, HookFired, Player};
 use crate::config::ArenaConfig;
-use crate::hookarena::{GameAssets, HOOK_DISTANCE, HOOK_RADIUS, HOOK_SPEED};
+use crate::states::game::{HOOK_DISTANCE, HOOK_RADIUS, HOOK_SPEED};
+use crate::util::GameAssets;
 
 pub struct NewHook {
     owner: Entity,

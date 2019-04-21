@@ -12,9 +12,11 @@ mod components;
 mod config;
 mod states;
 mod systems;
+mod tile_loader;
 mod util;
 use crate::config::ArenaConfig;
 use crate::states::Game;
+// use crate::tile_loader;
 
 fn main() -> amethyst::Result<()> {
     amethyst::Logger::from_config(Default::default())
@@ -56,6 +58,8 @@ fn main() -> amethyst::Result<()> {
         )
         .with(systems::GravitySystem, "gravity_system", &[])
         .with(systems::MoveHookSystem, "move_hook_system", &[]);
+
+    tile_loader::initialise(10, 10);
 
     let mut game = Application::build("./", Game)?
         .with_resource(arena_config)

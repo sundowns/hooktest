@@ -4,17 +4,22 @@ use num_traits::FromPrimitive;
 
 use crate::util::GameAssets;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 struct TileDataUnit {
     id: usize,
-    position: [u32; 2],
 }
 
 #[derive(Debug)]
 pub struct TileData {
-    tiles: Vec<Vec<Option<TileDataUnit>>>,
+    tiles: Vec<Option<TileDataUnit>>,
     cols: usize,
     rows: usize,
+}
+
+impl TileData {
+    fn get_tile(&self, x: usize, y: usize) -> Option<TileDataUnit> {
+        self.tiles[(y * self.cols) + x]
+    }
 }
 
 use crate::components::{Tile, TileType};
@@ -31,34 +36,30 @@ fn tile_id_to_type(id: usize) -> TileType {
 pub fn populate_world(world: &mut World, tile_data: TileData, game_assets: GameAssets) {
     // lets create tile entities with sprites and locations
 
-    for _row in tile_data.tiles.iter() {
-        for _cell in _row.iter() {
-            if let Some(_tile) = _cell {
-                let tile_type = tile_id_to_type(_tile.id);
+    for _cell in tile_data.tiles.iter() {
+        if let Some(_tile) = _cell {
+            let tile_type = tile_id_to_type(_tile.id);
 
-                let mut local_transform = Transform::default();
+            let mut local_transform = Transform::default();
 
-                //TODO: need to figure out deriving their on-screen positions from the grid pos
-                // local_transform.set_xyz(
-                //     _tile.position[0] as f32 * tile_width,
-                //     _tile.position[1] as f32 * tile_height,
-                //     0.0,
-                // );
+            //TODO: need to figure out deriving their on-screen positions from the grid pos
+            // TODO: May not actually be required, can we just draw them based on tile size & indices?
+            // local_transform.set_xyz(
+            //     _tile.position[0] as f32 * tile_width,
+            //     _tile.position[1] as f32 * tile_height,
+            //     0.0,
+            // );
 
-                world
-                    .create_entity()
-                    .with(Tile {
-                        _type: tile_type,
-                        position: _tile.position,
-                    })
-                    .with(game_assets.tile_sprite(_tile.id))
-                    .with(local_transform)
-                    .build();
-
-                println!("ur getting an entity");
-            };
-        }
+            world
+                .create_entity()
+                .with(Tile { _type: tile_type })
+                .with(game_assets.tile_sprite(_tile.id))
+                .with(local_transform)
+                .build();
+        };
     }
+
+    world.add_resource(tile_data);
 }
 
 pub fn load_tile_data(cols: usize, rows: usize) -> Option<TileData> {
@@ -68,16 +69,10 @@ pub fn load_tile_data(cols: usize, rows: usize) -> Option<TileData> {
         rows: rows,
     };
 
-    for x in 0..cols {
-        data.tiles.push(Vec::new());
-        for y in 0..rows {
-            // TODO: place tiles based on a file (just on the bottom row for now)
-            if y == rows - 1 {
-                data.tiles[x].push(Some(TileDataUnit {
-                    id: 0,
-                    position: [x as u32, y as u32],
-                }));
-            }
+    for i in 0..cols * rows {
+        // TODO: place tiles based on a file (just on the bottom row for now)
+        if i >= cols * (rows - 1) {
+            data.tiles.push(Some(TileDataUnit { id: 0 }));
         }
     }
 

@@ -40,14 +40,14 @@ impl SimpleState for Game {
             tile_sheet: tile_sheet_handle.clone(),
         };
 
+        world.add_resource(assets.clone());
+
         match tile_loader::load_tile_data(GRID_COLS, GRID_ROWS) {
-            Some(data) => tile_loader::populate_world(world, data, assets.clone()),
+            Some(data) => tile_loader::populate_world(world, data, assets),
             _ => {
                 panic!("failed to load the tile data");
             }
         };
-
-        world.add_resource(assets);
 
         initialise_player(world, sprite_sheet_handle);
         initialise_camera(world);

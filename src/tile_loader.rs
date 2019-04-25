@@ -2,27 +2,28 @@ use amethyst::core::transform::Transform;
 use amethyst::prelude::*;
 use num_traits::FromPrimitive;
 
+use crate::components::{Tile, TileType};
 use crate::util::GameAssets;
 
 #[derive(Debug, Clone, Copy)]
 struct TileDataUnit {
     id: usize,
+    position: (u32, u32),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TileData {
     tiles: Vec<Option<TileDataUnit>>,
-    cols: usize,
-    rows: usize,
+    pub cols: u32,
+    pub rows: u32,
+    pub cell_dimensions: (f32, f32),
 }
 
 impl TileData {
-    fn get_tile(&self, x: usize, y: usize) -> Option<TileDataUnit> {
-        self.tiles[(y * self.cols) + x]
+    fn get_tile(&self, x: u32, y: u32) -> Option<TileDataUnit> {
+        self.tiles[((y * self.cols) + x) as usize]
     }
 }
-
-use crate::components::{Tile, TileType};
 
 fn tile_id_to_type(id: usize) -> TileType {
     match FromPrimitive::from_usize(id) {
@@ -42,13 +43,12 @@ pub fn populate_world(world: &mut World, tile_data: TileData, game_assets: GameA
 
             let mut local_transform = Transform::default();
 
-            //TODO: need to figure out deriving their on-screen positions from the grid pos
-            // TODO: May not actually be required, can we just draw them based on tile size & indices?
-            // local_transform.set_xyz(
-            //     _tile.position[0] as f32 * tile_width,
-            //     _tile.position[1] as f32 * tile_height,
-            //     0.0,
-            // );
+            local_transform.set_xyz(
+                tile_data.cell_dimensions.0 * _tile.position.0 as f32,
+                (tile_data.cell_dimensions.1 * tile_data.rows as f32)
+                    - tile_data.cell_dimensions.1 * _tile.position.1 as f32,
+                0.0,
+            );
 
             world
                 .create_entity()
@@ -62,17 +62,29 @@ pub fn populate_world(world: &mut World, tile_data: TileData, game_assets: GameA
     world.add_resource(tile_data);
 }
 
-pub fn load_tile_data(cols: usize, rows: usize) -> Option<TileData> {
+pub fn load_tile_data(cell_dimensions: (f32, f32)) -> Option<TileData> {
+    // TODO: Derive from the loaded file
+    let cols: u32 = 32;
+    let rows: u32 = 18;
+
     let mut data = TileData {
         tiles: Vec::new(),
-        cols: cols,
-        rows: rows,
+        cols,
+        rows,
+        cell_dimensions,
     };
+
+    let y = rows - 1;
 
     for i in 0..cols * rows {
         // TODO: place tiles based on a file (just on the bottom row for now)
-        if i >= cols * (rows - 1) {
-            data.tiles.push(Some(TileDataUnit { id: 0 }));
+        if i >= cols * y {
+            data.tiles.push(Some(TileDataUnit {
+                id: 0,
+                position: ((i - (cols * y)), y),
+            }));
+        } else {
+            data.tiles.push(None);
         }
     }
 

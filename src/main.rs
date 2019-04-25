@@ -14,7 +14,6 @@ mod states;
 mod systems;
 mod tile_loader;
 mod util;
-use crate::config::ArenaConfig;
 use crate::states::Game;
 
 fn main() -> amethyst::Result<()> {
@@ -36,10 +35,6 @@ fn main() -> amethyst::Result<()> {
     let input_bundle =
         InputBundle::<String, String>::new().with_bindings_from_file(binding_path)?;
 
-    let config_path = format!("{}/resources/config.ron", application_root_dir());
-
-    let arena_config = ArenaConfig::load(&config_path);
-
     let game_data = GameDataBuilder::default()
         .with_bundle(RenderBundle::new(pipe, Some(config)).with_sprite_sheet_processor())?
         .with_bundle(TransformBundle::new())?
@@ -58,9 +53,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::GravitySystem, "gravity_system", &[])
         .with(systems::MoveHookSystem, "move_hook_system", &[]);
 
-    let mut game = Application::build("./", Game)?
-        .with_resource(arena_config)
-        .build(game_data)?;
+    let mut game = Application::build("./", Game)?.build(game_data)?;
 
     game.run();
 

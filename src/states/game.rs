@@ -13,8 +13,7 @@ use crate::config::ArenaConfig;
 use crate::tile_loader;
 use crate::util::GameAssets;
 
-pub const GRID_COLS: usize = 32;
-pub const GRID_ROWS: usize = 18;
+pub const CELL_DIMENSIONS: (f32, f32) = (8.0, 8.0);
 
 pub const HOOK_RADIUS: f32 = 2.0;
 pub const HOOK_DISTANCE: f32 = 60.0;
@@ -42,8 +41,11 @@ impl SimpleState for Game {
 
         world.add_resource(assets.clone());
 
-        match tile_loader::load_tile_data(GRID_COLS, GRID_ROWS) {
-            Some(data) => tile_loader::populate_world(world, data, assets),
+        match tile_loader::load_tile_data(CELL_DIMENSIONS) {
+            Some(data) => {
+                initialise_world(world, data.cell_dimensions, data.cols, data.rows);
+                tile_loader::populate_world(world, data, assets);
+            }
             _ => {
                 panic!("failed to load the tile data");
             }
@@ -52,6 +54,16 @@ impl SimpleState for Game {
         initialise_player(world, sprite_sheet_handle);
         initialise_camera(world);
     }
+}
+
+fn initialise_world(world: &mut World, cell_dimensions: (f32, f32), cols: u32, rows: u32) {
+    let mut config = ArenaConfig::default();
+    config.width = cell_dimensions.0 * cols as f32;
+    config.height = cell_dimensions.1 * rows as f32;
+
+    println!("width: {}, height: {}", config.width, config.height);
+
+    world.add_resource(config);
 }
 
 fn initialise_player(world: &mut World, sprite_sheet: SpriteSheetHandle) {

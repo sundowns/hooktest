@@ -1,6 +1,4 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
 pub struct ArenaConfig {
     pub height: f32,
     pub width: f32,
@@ -12,7 +10,7 @@ impl Default for ArenaConfig {
         ArenaConfig {
             height: 100.0,
             width: 100.0,
-            friction: 0.3,
+            friction: 0.25,
         }
     }
 }

@@ -44,9 +44,11 @@ pub fn populate_world(world: &mut World, tile_data: TileData, game_assets: GameA
             let mut local_transform = Transform::default();
 
             local_transform.set_xyz(
-                tile_data.cell_dimensions.0 * _tile.position.0 as f32,
+                tile_data.cell_dimensions.0 * _tile.position.0 as f32
+                    + tile_data.cell_dimensions.0 / 2.0,
                 (tile_data.cell_dimensions.1 * tile_data.rows as f32)
-                    - tile_data.cell_dimensions.1 * _tile.position.1 as f32,
+                    - tile_data.cell_dimensions.1 * _tile.position.1 as f32
+                    - tile_data.cell_dimensions.1 / 2.0,
                 0.0,
             );
 
